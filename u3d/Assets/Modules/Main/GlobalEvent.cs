@@ -88,6 +88,6 @@ public class GlobalEvent : MonoBehaviour
             Debug.LogError("cvs 不存在");
         }
 
-        cvs.settingManager.Show();
+        cvs.settingManager.Toggle();
     }
 }

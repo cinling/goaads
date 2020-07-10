@@ -13,22 +13,49 @@ public class SettingManager
     /// bar 配置参数
     /// </summary>
     private BarVo barVo = new BarVo();
+    /// <summary>
+    /// 当前是否显示了菜单
+    /// </summary>
+    private bool isShow = false;
 
     public SettingManager(Canvas cvs)
     {
         this.cvs = cvs;
     }
 
-    public void Show()
+    /// <summary>
+    /// 显示或隐藏菜单
+    /// </summary>
+    public void Toggle()
     {
-        GameObject prefab = (GameObject)Resources.Load("Prefabs/ScrollView");
-        GameObject go = this.cvs.InstantiateGO(prefab);
-        go.transform.parent = this.cvs.transform;
+        if (isShow)
+        {
+            this.hide();
+        }
+        else
+        {
+            this.show();
+        }
+        isShow = !isShow;
     }
 
-    public void Hide()
+    private void show()
     {
+        GameObject prefab = (GameObject)Resources.Load("Prefabs/SettingView");
+        GameObject go = this.cvs.InstantiateGO(prefab);
+        go.transform.SetParent(this.cvs.transform);
 
+        SettingView sv = go.GetComponent<SettingView>();
+        sv.SetBarVo(this.barVo);
+    }
+
+    private void hide()
+    {
+        SettingView sv = this.cvs.GetComponentInChildren<SettingView>();
+        if (sv != null)
+        {
+            this.cvs.DestroyGO(sv.gameObject);
+        }
     }
 
     /// <summary>
