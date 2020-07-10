@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Canvas : MonoBehaviour
+public class Canvas : MyMono
 {
     /// <summary>
     /// bar 管理器
@@ -18,6 +18,14 @@ public class Canvas : MonoBehaviour
     {
         this.barManager = new BarManager(this);
         this.settingManager = new SettingManager(this);
+    }
+
+    void Start()
+    {
+        GameObject.Find(this.GetFullPath() + "/SettingButton").GetComponent<Button>().onClick.AddListener(delegate
+        {
+            this.settingManager.Toggle();
+        });
     }
 
     /// <summary>

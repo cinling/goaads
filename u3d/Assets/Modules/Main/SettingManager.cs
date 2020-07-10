@@ -30,32 +30,42 @@ public class SettingManager
     {
         if (isShow)
         {
-            this.hide();
+            this.Hide();
         }
         else
         {
-            this.show();
+            this.Show();
         }
-        isShow = !isShow;
     }
 
-    private void show()
+    public void Show()
     {
+        if (this.isShow)
+        {
+            this.Hide();
+        }
+
+        // 初始哈面板对象
         GameObject prefab = (GameObject)Resources.Load("Prefabs/SettingView");
         GameObject go = this.cvs.InstantiateGO(prefab);
         go.transform.SetParent(this.cvs.transform);
 
+        // 设置面板参数
         SettingView sv = go.GetComponent<SettingView>();
         sv.SetBarVo(this.barVo);
+
+        this.isShow = true;
     }
 
-    private void hide()
+    public void Hide()
     {
         SettingView sv = this.cvs.GetComponentInChildren<SettingView>();
         if (sv != null)
         {
             this.cvs.DestroyGO(sv.gameObject);
         }
+
+        this.isShow = false;
     }
 
     /// <summary>

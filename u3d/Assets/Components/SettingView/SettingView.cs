@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +29,10 @@ public class SettingView : MyMono
     /// 数目输入框实例
     /// </summary>
     private InputField numLineInputFiled = null;
+    /// <summary>
+    /// Canvas 实例
+    /// </summary>
+    private Canvas cvs = null;
     /// <summary>
     /// 数目滑块的值
     /// </summary>
@@ -83,6 +86,8 @@ public class SettingView : MyMono
         // 设置位置
         RectTransform rect = this.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0, 0);
+        this.reset();
+        this.registerListener();
     }
 
     // Update is called once per frame
@@ -92,30 +97,15 @@ public class SettingView : MyMono
     }
 
     /// <summary>
-    /// 设置bar配置参数
+    /// 注册事件监听器
     /// </summary>
-    /// <param name="barVo"></param>
-    public void SetBarVo(BarVo barVo)
+    private void registerListener()
     {
-        this.barVo = barVo;
-        this.initSettingViewByConfig();
-    }
-
-    /// <summary>
-    /// 根据配置参数初始化设置面板
-    /// </summary>
-    private void initSettingViewByConfig()
-    {
-        // 获取对象
-        InputField inputField = this.getNumLineInputField();
         Slider slider = this.getNumLineSlider();
+        InputField inputField = this.getNumLineInputField();
 
-        // 初始化滚动条
-        slider.value = this.barVo.barNum;
-        slider.minValue = this.minBarNum;
-        slider.maxValue = this.maxBarNum;
-        slider.wholeNumbers = true; // 设置步长为整数形式
-        slider.onValueChanged.AddListener(delegate {
+        slider.onValueChanged.AddListener(delegate
+        {
             this.barVo.barNum = (int)slider.value;
             if (this.numLineInputFieldValue != this.barVo.barNum)
             {
@@ -123,26 +113,55 @@ public class SettingView : MyMono
             }
         });
 
-        // 初始化输入框
-        inputField.text = "" + this.barVo.barNum;
         inputField.onValueChanged.AddListener(delegate {
-            int num = int.Parse(inputField.text);
-            if (num < this.minBarNum)
+            if (this.numLineInputFieldValue < this.minBarNum)
             {
-                num = this.minBarNum;
-            } 
-            else if (num > this.maxBarNum) 
-            {
-                num = this.maxBarNum;
+                this.numLineInputFieldValue = this.minBarNum;
             }
-            this.numLineInputFieldValue = num;
-            this.barVo.barNum = num;
+            else if (this.numLineInputFieldValue > this.maxBarNum)
+            {
+                this.numLineInputFieldValue = this.maxBarNum;
+            }
+            this.barVo.barNum = this.numLineInputFieldValue;
 
             if (this.numLineSliderValue != this.barVo.barNum)
             {
                 this.numLineSliderValue = this.barVo.barNum;
             }
         });
+
+        GameObject.Find(this.GetFullPath() + "/" + ContextPath + "/OKButton").GetComponent<Button>().onClick.AddListener(delegate {
+            StartCoroutine(onOkClick());
+        });
+        GameObject.Find(this.GetFullPath() + "/" + ContextPath + "/CancleButton").GetComponent<Button>().onClick.AddListener(delegate {
+            StartCoroutine(onCancleClick());
+        });
+    }
+
+    /// <summary>
+    /// 设置bar配置参数
+    /// </summary>
+    /// <param name="barVo"></param>
+    public void SetBarVo(BarVo barVo)
+    {
+        this.barVo = barVo;
+        this.reset();
+    }
+
+    /// <summary>
+    /// 根据参数配置，重置 prefab 的参数
+    /// </summary>
+    private void reset()
+    {
+        // 初始化滚动条
+        Slider slider = this.getNumLineSlider();
+        this.numLineSliderValue = this.barVo.barNum;
+        slider.minValue = this.minBarNum;
+        slider.maxValue = this.maxBarNum;
+        slider.wholeNumbers = true; // 设置步长为整数形式
+
+        // 初始化输入框
+        this.numLineInputFieldValue = this.barVo.barNum;
     }
 
     /// <summary>
@@ -169,5 +188,35 @@ public class SettingView : MyMono
             this.numLineInputFiled = GameObject.Find(this.GetFullPath() + "/" + ContextPath + "/NumLine/InputField").GetComponent<InputField>();
         }
         return this.numLineInputFiled;
+    }
+
+    /// <summary>
+    /// 确定按钮点击
+    /// </summary>
+    private IEnumerator onOkClick()
+    {
+        yield return new WaitForFixedUpdate();
+
+        this.getCanvas().barManager.SetBarVo(this.barVo);
+        this.getCanvas().settingManager.Hide();
+    }
+
+    /// <summary>
+    /// 取消按钮点击
+    /// </summary>
+    private IEnumerator onCancleClick()
+    {
+        yield return new WaitForFixedUpdate();
+
+        this.getCanvas().settingManager.Hide();
+    }
+
+    private Canvas getCanvas()
+    {
+        if (this.cvs == null)
+        {
+            this.cvs = GameObject.Find("Canvas").GetComponent<Canvas>();
+        }
+        return this.cvs;
     }
 }

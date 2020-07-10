@@ -15,41 +15,30 @@ public class BarManager
     private BarVo barVo = new BarVo();
 
     /// <summary>
-    /// 每个条宽度占比。
-    /// 如果是 0.8f
-    /// 则 bar 的宽度是 0.8个单位，空白是 0.2 个单位
-    /// </summary>
-    private static readonly float barWidthRate = 0.8f;
-    /// <summary>
-    /// 条数
-    /// </summary>
-    private static int barNum = 200;
-
-    /// <summary>
     /// Obsolete
     /// </summary>
     /// <obsolete>不推荐使用</obsolete>
     public float widthUnit {
         get {
-            return (Screen.width - 50) / (float)barNum;
+            return (Screen.width - this.barVo.marginLeft - this.barVo.marginRight - 50) / this.barVo.barNum;
         }
     }
 
     public float heightUnit {
         get {
-            return (Screen.height - 50) / (float)barNum;
+            return (Screen.height - this.barVo.marginTop - this.barVo.marginBottom - 50) / this.barVo.barNum;
         }
     }
 
     public float barWidth {
         get {
-            return this.widthUnit * barWidthRate;
+            return this.widthUnit * this.barVo.barWidthRate;
         }
     }
 
     public float spaceWidth {
         get {
-            return this.widthUnit * (1 - barWidthRate);
+            return this.widthUnit * (1 - this.barVo.barWidthRate);
         }
     }
 
@@ -66,9 +55,6 @@ public class BarManager
     {
         this.initBarList();
         this.cvs.StartCoroutine(disruptionBarList());
-        //this.disruptionBarList();
-        //this.showBarList();
-        //this.printBarList();
     }
 
     /// <summary>
@@ -78,6 +64,7 @@ public class BarManager
     public void SetBarVo(BarVo vo)
     {
         this.barVo = vo;
+        this.Init();
     }
 
     public void PrintBarList()
@@ -102,7 +89,7 @@ public class BarManager
 
         this.barList.Clear();
 
-        for (int i = 1; i <= barNum; i++)
+        for (int i = 1; i <= this.barVo.barNum; i++)
         {
             Bar bar = this.createBar(i, this.barWidth, this.heightUnit * i);
             bar.num = i;
@@ -175,10 +162,11 @@ public class BarManager
 
         for (int i = 0; i < this.barList.Count; i++)
         {
-            float x = wUnit * i + this.barWidth + this.spaceWidth;
+            float x = wUnit * i + this.barWidth + this.spaceWidth + this.barVo.marginLeft;
+            float y = -this.barVo.marginTop;
 
             Bar bar = this.barList[i];
-            bar.SetPosition(x, -25);
+            bar.SetPosition(x, y);
         }
     }
 }

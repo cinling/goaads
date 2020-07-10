@@ -15,4 +15,20 @@ public class BarVo
     /// 需要的 bar 条数
     /// </summary>
     public int barNum = 100;
+    /// <summary>
+    /// 左边距
+    /// </summary>
+    public float marginLeft = 15;
+    /// <summary>
+    /// 右边距
+    /// </summary>
+    public float marginRight = 15;
+    /// <summary>
+    /// 上边距
+    /// </summary>
+    public float marginTop = 50;
+    /// <summary>
+    /// 下边距
+    /// </summary>
+    public float marginBottom = 15;
 }

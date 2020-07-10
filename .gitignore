@@ -1,5 +1,7 @@
 /.idea
+/.vs
 /output
+/u3d/.vs
 /u3d/Library
 /u3d/Logs
 /u3d/Packages
