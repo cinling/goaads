@@ -48,7 +48,6 @@ public class Canvas : MyMono
 
     private void Update()
     {
-        this.barManager.ResetBarListView();
     }
 
     /// <summary>

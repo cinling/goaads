@@ -33,12 +33,12 @@ public class Algorithm
                 Bar bar1 = this.barManager.barList[i];
                 Bar bar2 = this.barManager.barList[i + 1];
                 yield return new WaitForSeconds(1 * intervalSeconds);
+                bar1.CompareAnimation();
+                bar2.CompareAnimation();
                 if (bar1.num > bar2.num)
                 {
                     yield return new WaitForSeconds(3 * intervalSeconds);
-                    Bar tmpBar = this.barManager.barList[i];
-                    this.barManager.barList[i] = this.barManager.barList[i + 1];
-                    this.barManager.barList[i + 1] = tmpBar;
+                    this.barManager.SwapBarList(i, i+1, true);
                     finished = false;
                 }
             }

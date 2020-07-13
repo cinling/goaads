@@ -1,10 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Bar : MonoBehaviour
 {
+    /// <summary>
+    /// 恢复的时间戳
+    /// </summary>
+    private long recoverMS;
 
     /// <summary>
     /// 数字大小
@@ -49,5 +55,59 @@ public class Bar : MonoBehaviour
     public override string ToString()
     {
         return "[num = " + this.num + "]";
+    }
+
+    /// <summary>
+    /// 对比动画
+    /// </summary>
+    public void CompareAnimation()
+    {
+        StartCoroutine(this.compareAnimation());
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator compareAnimation()
+    {
+        if (this.recoverMS < TimeUtil.nowMS())
+        {
+            Image image = this.gameObject.GetComponent<Image>();
+            image.color = Color.white;
+            yield return new WaitForFixedUpdate();
+            if (this.recoverMS <= TimeUtil.nowMS())
+            {
+                image.color = Color.black;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 交换动画
+    /// </summary>
+    public void SwapAnimation()
+    {
+        StartCoroutine(this.swapAnimation());
+    }
+
+    private IEnumerator swapAnimation()
+    {
+        if (this.recoverMS < TimeUtil.nowMS())
+        {
+            // 变换恢复的时间
+            int transTimeoutMS = 100;
+            Image image = this.gameObject.GetComponent<Image>();
+
+            this.recoverMS = TimeUtil.nowMS() + transTimeoutMS;
+
+            image.color = Color.red;
+            yield return new WaitForSeconds(transTimeoutMS * 0.001f);
+            while (this.recoverMS > TimeUtil.nowMS())
+            {
+                yield return new WaitForFixedUpdate();
+            }
+            image.color = Color.black;
+        }
     }
 }

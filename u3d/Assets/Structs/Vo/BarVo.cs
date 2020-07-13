@@ -36,5 +36,5 @@ public class BarVo
     /// 包括对比、位置互换.
     /// 对比是一次操作。互换是三次（一次赋值就是一次计算）
     /// </summary>
-    public float intervalSeconds = 0.001f;
+    public float intervalSeconds = 0.01f;
 }

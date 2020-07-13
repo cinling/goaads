@@ -13,7 +13,7 @@ public class BarManager
     /// 运行锁
     /// 运行时，除了可以执行 Init() 进行解锁外，不能进行任何操作
     /// </summary>
-    private bool _runLock = true;
+    private bool _runLock = false;
     /// <summary>
     /// 运行锁
     /// </summary>
@@ -160,7 +160,7 @@ public class BarManager
                 continue;
             }
 
-            this.swapBarList(targetIndex, randomIndex, false);
+            this.SwapBarList(targetIndex, randomIndex, false);
         }
 
         this.ResetBarListView();
@@ -169,7 +169,7 @@ public class BarManager
     /// <summary>
     /// 交换连个bar的位置
     /// </summary>
-    private void swapBarList(int firstIndex, int secondIndex, bool updateView)
+    public void SwapBarList(int firstIndex, int secondIndex, bool updateView)
     {
         Bar tmpBar = this.barList[firstIndex];
         this.barList[firstIndex] = this.barList[secondIndex];
@@ -179,7 +179,20 @@ public class BarManager
         // 更新视图数据
         if (updateView)
         {
-            // TODO
+            Bar bar1 = this.barList[firstIndex];
+            Bar bar2 = this.barList[secondIndex];
+
+            // 重新计算坐标
+            float wUnit = this.widthUnit;
+            float x1 = wUnit * firstIndex + this.barWidth + this.spaceWidth + this.barVo.marginLeft;
+            float x2 = wUnit * secondIndex + this.barWidth + this.spaceWidth + this.barVo.marginLeft;
+            float y = -this.barVo.marginTop;
+            bar1.SetPosition(x1, y);
+            bar2.SetPosition(x2, y);
+
+            // 交换动画
+            bar1.SwapAnimation();
+            bar2.SwapAnimation();
         }
     }
 
