@@ -22,10 +22,33 @@ public class Canvas : MyMono
 
     void Start()
     {
+        // 设置
         GameObject.Find(this.GetFullPath() + "/SettingButton").GetComponent<Button>().onClick.AddListener(delegate
         {
             this.settingManager.Toggle();
         });
+
+        // 重置
+        GameObject.Find(this.GetFullPath() + "/ResetButton").GetComponent<Button>().onClick.AddListener(delegate
+        {
+            this.barManager.Init();
+        });
+
+        // 开始
+        GameObject.Find(this.GetFullPath() + "/StartButton").GetComponent<Button>().onClick.AddListener(delegate
+        {
+            if (this.barManager.runLock)
+            {
+                Debug.LogWarning("已上锁，请解锁后继续");
+                return;
+            }
+            this.barManager.Start();
+        });
+    }
+
+    private void Update()
+    {
+        this.barManager.ResetBarListView();
     }
 
     /// <summary>

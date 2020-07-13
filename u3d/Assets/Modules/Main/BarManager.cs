@@ -6,13 +6,26 @@ public class BarManager
 {
     private Canvas cvs;
     /// <summary>
-    /// bar 列表（有序）
-    /// </summary>
-    private List<Bar> barList = new List<Bar>();
-    /// <summary>
     /// 配置
     /// </summary>
     private BarVo barVo = new BarVo();
+    /// <summary>
+    /// 运行锁
+    /// 运行时，除了可以执行 Init() 进行解锁外，不能进行任何操作
+    /// </summary>
+    private bool _runLock = true;
+    /// <summary>
+    /// 运行锁
+    /// </summary>
+    public bool runLock {
+        get {
+            return this._runLock;
+        }
+    }
+    /// <summary>
+    /// bar 列表（无序）
+    /// </summary>
+    public List<Bar> barList = new List<Bar>();
 
     /// <summary>
     /// Obsolete
@@ -55,6 +68,16 @@ public class BarManager
     {
         this.initBarList();
         this.cvs.StartCoroutine(disruptionBarList());
+        this.runLockDown(); // 解锁
+    }
+
+    public void Start()
+    {
+        this.checkRunLock();
+        this.runLockUp(); // 上锁
+
+        Algorithm alg = new Algorithm(this);
+        this.cvs.StartCoroutine(alg.BubbleSort());
     }
 
     /// <summary>
@@ -63,12 +86,19 @@ public class BarManager
     /// <param name="vo"></param>
     public void SetBarVo(BarVo vo)
     {
+        this.checkRunLock();
         this.barVo = vo;
         this.Init();
     }
 
+    public BarVo GetBarVo()
+    {
+        return this.barVo;
+    }
+
     public void PrintBarList()
     {
+        this.checkRunLock();
         foreach (Bar bar in this.barList)
         {
             Debug.Log(bar.ToString());
@@ -133,7 +163,7 @@ public class BarManager
             this.swapBarList(targetIndex, randomIndex, false);
         }
 
-        this.showBarList();
+        this.ResetBarListView();
     }
 
     /// <summary>
@@ -154,9 +184,9 @@ public class BarManager
     }
 
     /// <summary>
-    /// 设置坐标
+    /// 根据列表的位置，重新设置bar的信息
     /// </summary>
-    private void showBarList()
+    public void ResetBarListView()
     {
         float wUnit = this.widthUnit;
 
@@ -167,6 +197,30 @@ public class BarManager
 
             Bar bar = this.barList[i];
             bar.SetPosition(x, y);
+        }
+    }
+
+    /// <summary>
+    /// 上锁
+    /// </summary>
+    private void runLockUp()
+    {
+        this._runLock = true;
+    }
+
+    /// <summary>
+    /// 解锁
+    /// </summary>
+    private void runLockDown()
+    {
+        this._runLock = false;
+    }
+
+    private void checkRunLock()
+    {
+        if (this.runLock)
+        {
+            throw new UnityException("BarManager 已锁定。请初始化以解锁");
         }
     }
 }
