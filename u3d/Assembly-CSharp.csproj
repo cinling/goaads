@@ -71,6 +71,7 @@
     <Compile Include="Assets\Modules\Main\GlobalEvent.cs" />
     <Compile Include="Assets\Modules\Main\SettingManager.cs" />
     <Compile Include="Assets\Modules\Main\SoundManager.cs" />
+    <Compile Include="Assets\Modules\Main\StartButton.cs" />
     <Compile Include="Assets\Structs\Ao\MyMono.cs" />
     <Compile Include="Assets\Structs\Vo\BarVo.cs" />
     <Compile Include="Assets\Utils\TimeUtil.cs" />

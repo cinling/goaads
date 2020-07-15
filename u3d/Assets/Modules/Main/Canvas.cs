@@ -38,17 +38,6 @@ public class Canvas : MyMono
         {
             this.barManager.Init();
         });
-
-        // 开始
-        GameObject.Find(this.GetFullPath() + "/StartButton").GetComponent<Button>().onClick.AddListener(delegate
-        {
-            if (this.barManager.runLock)
-            {
-                Debug.LogWarning("已上锁，请解锁后继续");
-                return;
-            }
-            this.barManager.Start();
-        });
     }
 
     private void Update()

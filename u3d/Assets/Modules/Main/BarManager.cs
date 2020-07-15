@@ -15,6 +15,10 @@ public class BarManager
     /// </summary>
     private bool _runLock = false;
     /// <summary>
+    /// 排序算法的协程
+    /// </summary>
+    private Coroutine sortCoroutine = null;
+    /// <summary>
     /// 运行锁
     /// </summary>
     public bool runLock {
@@ -77,7 +81,20 @@ public class BarManager
         this.runLockUp(); // 上锁
 
         Algorithm alg = new Algorithm(this);
-        this.cvs.StartCoroutine(alg.BubbleSort());
+        this.sortCoroutine = this.cvs.StartCoroutine(alg.BubbleSort());
+    }
+
+    /// <summary>
+    /// 停止继续运算
+    /// </summary>
+    public void Stop()
+    {
+        if (this.sortCoroutine != null)
+        {
+            this.cvs.StopCoroutine(this.sortCoroutine);
+            this.sortCoroutine = null;
+            this.runLockDown();
+        }
     }
 
     /// <summary>
