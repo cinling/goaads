@@ -96,7 +96,7 @@ public class Bar : MonoBehaviour
         if (this.recoverMS < TimeUtil.nowMS())
         {
             // 变换恢复的时间
-            int transTimeoutMS = 100;
+            int transTimeoutMS = 34;
             Image image = this.gameObject.GetComponent<Image>();
 
             this.recoverMS = TimeUtil.nowMS() + transTimeoutMS;

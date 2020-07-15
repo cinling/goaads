@@ -35,6 +35,7 @@ public class Algorithm
                 yield return new WaitForSeconds(1 * intervalSeconds);
                 bar1.CompareAnimation();
                 bar2.CompareAnimation();
+                this.barManager.PlayCompareSound();
                 if (bar1.num > bar2.num)
                 {
                     yield return new WaitForSeconds(3 * intervalSeconds);

@@ -193,6 +193,9 @@ public class BarManager
             // 交换动画
             bar1.SwapAnimation();
             bar2.SwapAnimation();
+
+            // 交换音效
+            this.PlaySwapSound();
         }
     }
 
@@ -211,6 +214,22 @@ public class BarManager
             Bar bar = this.barList[i];
             bar.SetPosition(x, y);
         }
+    }
+
+    /// <summary>
+    /// 播放对比的声音
+    /// </summary>
+    public void PlayCompareSound()
+    {
+        this.cvs.soundManager.PlayPiano(33);
+    }
+
+    /// <summary>
+    /// 播放交换的声音
+    /// </summary>
+    public void PlaySwapSound()
+    {
+        this.cvs.soundManager.PlayPiano(77);
     }
 
     /// <summary>

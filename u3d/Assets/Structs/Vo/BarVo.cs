@@ -14,7 +14,7 @@ public class BarVo
     /// <summary>
     /// 需要的 bar 条数
     /// </summary>
-    public int barNum = 100;
+    public int barNum = 20;
     /// <summary>
     /// 左边距
     /// </summary>
@@ -36,5 +36,5 @@ public class BarVo
     /// 包括对比、位置互换.
     /// 对比是一次操作。互换是三次（一次赋值就是一次计算）
     /// </summary>
-    public float intervalSeconds = 0.01f;
+    public float intervalSeconds = 0.1f;
 }

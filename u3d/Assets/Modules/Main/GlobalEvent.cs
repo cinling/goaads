@@ -59,6 +59,14 @@ public class GlobalEvent : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         Debug.Log("t");
+
+        Canvas cvs = FindObjectOfType<Canvas>();
+        if (cvs == null)
+        {
+            Debug.LogError("cvs 不存在");
+        }
+
+        cvs.soundManager.PlayPiano(11);
     }
     /// <summary>
     /// 初始化一个bar列表

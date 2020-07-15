@@ -13,11 +13,16 @@ public class Canvas : MyMono
     /// 设置管理器
     /// </summary>
     public SettingManager settingManager = null;
+    /// <summary>
+    /// 声音管理器
+    /// </summary>
+    public SoundManager soundManager = null;
 
     void Awake()
     {
         this.barManager = new BarManager(this);
         this.settingManager = new SettingManager(this);
+        this.soundManager = new SoundManager(this);
     }
 
     void Start()
