@@ -37,4 +37,12 @@ public class BarVo
     /// 对比是一次操作。互换是三次（一次赋值就是一次计算）
     /// </summary>
     public float intervalSeconds = 0.1f;
+    /// <summary>
+    /// 交换动画时长
+    /// </summary>
+    public float swapAnimationSeconds = 0.3f;
+    /// <summary>
+    /// 对比动画时长
+    /// </summary>
+    public float compareAnimationSeconds = 0.3f;
 }

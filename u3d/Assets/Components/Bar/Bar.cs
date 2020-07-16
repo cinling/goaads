@@ -5,12 +5,115 @@ using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// bar 状态枚举
+/// </summary>
+public enum BarStatus
+{
+    /// <summary>
+    /// 无。静止状态
+    /// </summary>
+    None,
+    /// <summary>
+    /// 对比中
+    /// </summary>
+    Compare,
+    /// <summary>
+    /// 交换中
+    /// </summary>
+    Swap,
+}
+
+/// <summary>
+/// 交换动画参数
+/// </summary>
+class SwapAnimotionOption
+{
+
+    /// <summary>
+    /// 原始位置（锚点坐标）
+    /// </summary>
+    private Vector2 originVec2;
+    /// <summary>
+    /// 需要移动到的位置（锚点坐标）
+    /// </summary>
+    private Vector2 targetVec2;
+    /// <summary>
+    /// 动画开始时 时间戳
+    /// </summary>
+    private long startMS;
+    /// <summary>
+    /// 动画结束时 时间戳
+    /// </summary>
+    private long endMS;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="vec2">初始化位置</param>
+    public SwapAnimotionOption(Vector2 vec2)
+    {
+        this.originVec2 = vec2;
+        this.targetVec2 = vec2;
+    }
+
+    /// <summary>
+    /// 设置目标位置
+    /// </summary>
+    /// <param name="vec2">需要移动到的位置</param>
+    /// <param name="durationMS">动画时长</param>
+    public void SetTargetVec2(Vector2 vec2, int durationMS)
+    {
+        this.originVec2 = this.targetVec2;
+        this.targetVec2 = vec2;
+        this.startMS = TimeUtil.nowMS();
+        this.endMS = this.startMS + durationMS;
+    }
+
+    /// <summary>
+    /// 当前需要移动到的坐标
+    /// </summary>
+    /// <returns></returns>
+    public Vector2 NowPosition()
+    {
+        float rate = (this.endMS - TimeUtil.nowMS()) / (float)(this.endMS - this.startMS);
+        if (rate < 0)
+        {
+            rate = 1;
+        }
+
+        float x = (this.targetVec2.x - this.originVec2.x) * rate + this.originVec2.x;
+        float y = (this.targetVec2.y - this.originVec2.y) * rate + this.originVec2.y;
+
+        return new Vector2(x, y);
+    }
+
+    /// <summary>
+    /// 直接获取目标位置
+    /// </summary>
+    /// <returns></returns>
+    public Vector2 GetTargetVec2()
+    {
+        return this.targetVec2;
+    }
+}
+
 public class Bar : MonoBehaviour
 {
     /// <summary>
     /// 恢复的时间戳
     /// </summary>
     private long recoverMS;
+    /// <summary>
+    /// bar 状态
+    /// </summary>
+    private BarStatus status = BarStatus.None;
+    /// <summary>
+    /// 交换动画参数
+    /// </summary>
+    private SwapAnimotionOption swapAnimotionOption;
+
 
     /// <summary>
     /// 数字大小
@@ -30,10 +133,20 @@ public class Bar : MonoBehaviour
 
     }
 
+    void Start()
+    {
+        Image img = this.gameObject.GetComponent<Image>();
+        this.swapAnimotionOption = new SwapAnimotionOption(img.rectTransform.anchoredPosition);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (this.status == BarStatus.Swap)
+        {
+            Image img = this.gameObject.GetComponent<Image>();
+            img.rectTransform.anchoredPosition = this.swapAnimotionOption.NowPosition();
+        }
     }
 
     /// <summary>
@@ -46,10 +159,26 @@ public class Bar : MonoBehaviour
         this.gameObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(w, h);
     }
 
+    /// <summary>
+    /// 设置需要移动到的位置
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     public void SetPosition(float x, float y)
     {
         Image img = this.gameObject.GetComponent<Image>();
-        img.rectTransform.anchoredPosition = new Vector3(x, y);
+        Vector2 vec2 = new Vector2(x, y);
+        img.rectTransform.anchoredPosition = vec2;
+        this.swapAnimotionOption = new SwapAnimotionOption(vec2);
+    }
+
+    /// <summary>
+    /// 设置位置，并且使用动画播放
+    /// </summary>
+    /// <param name="vec2"></param>
+    public void SetPositionWithAnimotion(Vector2 vec2)
+    {
+        this.swapAnimotionOption.SetTargetVec2(vec2, 300);
     }
 
     public override string ToString()
@@ -62,7 +191,12 @@ public class Bar : MonoBehaviour
     /// </summary>
     public void CompareAnimation()
     {
+        if (!this.CanChangeTo(BarStatus.Compare))
+        {
+            return;
+        }
         StartCoroutine(this.compareAnimation());
+        this.status = BarStatus.Compare;
     }
 
     /// <summary>
@@ -71,15 +205,17 @@ public class Bar : MonoBehaviour
     /// <returns></returns>
     private IEnumerator compareAnimation()
     {
-        if (this.recoverMS < TimeUtil.nowMS())
+        Image image = this.gameObject.GetComponent<Image>();
+        image.color = Color.white;
+        yield return new WaitForSeconds(0.3f);
+        if (this.recoverMS <= TimeUtil.nowMS())
         {
-            Image image = this.gameObject.GetComponent<Image>();
-            image.color = Color.white;
-            yield return new WaitForFixedUpdate();
-            if (this.recoverMS <= TimeUtil.nowMS())
-            {
-                image.color = Color.black;
-            }
+            image.color = Color.black;
+        }
+
+        if (this.status == BarStatus.Compare)
+        {
+            this.status = BarStatus.None;
         }
     }
 
@@ -88,26 +224,55 @@ public class Bar : MonoBehaviour
     /// </summary>
     public void SwapAnimation()
     {
+        if (!this.CanChangeTo(BarStatus.Swap))
+        {
+            return;
+        }
         StartCoroutine(this.swapAnimation());
+        this.status = BarStatus.Swap;
     }
 
     private IEnumerator swapAnimation()
     {
-        if (this.recoverMS < TimeUtil.nowMS())
+        // 变换恢复的时间
+        int transTimeoutMS = 300;
+        Image image = this.gameObject.GetComponent<Image>();
+
+        this.recoverMS = TimeUtil.nowMS() + transTimeoutMS;
+
+        image.color = Color.red;
+        yield return new WaitForSeconds(transTimeoutMS * 0.001f);
+        while (this.recoverMS > TimeUtil.nowMS())
         {
-            // 变换恢复的时间
-            int transTimeoutMS = 34;
-            Image image = this.gameObject.GetComponent<Image>();
+            yield return new WaitForFixedUpdate();
+        }
+        image.color = Color.black;
+        if (this.status == BarStatus.Swap)
+        {
+            this.status = BarStatus.None;
+            image.rectTransform.anchoredPosition = this.swapAnimotionOption.GetTargetVec2();
+        }
+    }
 
-            this.recoverMS = TimeUtil.nowMS() + transTimeoutMS;
 
-            image.color = Color.red;
-            yield return new WaitForSeconds(transTimeoutMS * 0.001f);
-            while (this.recoverMS > TimeUtil.nowMS())
-            {
-                yield return new WaitForFixedUpdate();
-            }
-            image.color = Color.black;
+
+    /// <summary>
+    /// 判断当前状态是否可以转变为目标状态
+    /// </summary>
+    /// <param name="targetStatus">目标状态</param>
+    /// <returns></returns>
+    public bool CanChangeTo(BarStatus targetStatus)
+    {
+        switch (this.status)
+        {
+            case BarStatus.None:
+                return true;
+            case BarStatus.Compare:
+                return targetStatus == BarStatus.Swap;
+            case BarStatus.Swap:
+                return false;
+            default:
+                return false;
         }
     }
 }

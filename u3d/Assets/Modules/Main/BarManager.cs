@@ -204,8 +204,8 @@ public class BarManager
             float x1 = wUnit * firstIndex + this.barWidth + this.spaceWidth + this.barVo.marginLeft;
             float x2 = wUnit * secondIndex + this.barWidth + this.spaceWidth + this.barVo.marginLeft;
             float y = -this.barVo.marginTop;
-            bar1.SetPosition(x1, y);
-            bar2.SetPosition(x2, y);
+            bar1.SetPositionWithAnimotion(new Vector2(x1, y));
+            bar2.SetPositionWithAnimotion(new Vector2(x2, y));
 
             // 交换动画
             bar1.SwapAnimation();
