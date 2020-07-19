@@ -62,12 +62,11 @@ public class Algorithm
         } while (!finished);
         recorderVo.Correct(RecoderType.Compare, -1); // 因 do while 导致多记录一次 对比
 
-        this.barManager.GetRecorderVo().Finished();
+        this.barManager.Finished();
     }
 
     /// <summary>
     /// 选择排序
-    /// TODO 需要处理计数器 RecorderVo
     /// </summary>
     /// <returns></returns>
     public IEnumerator SelectSort()
@@ -117,6 +116,6 @@ public class Algorithm
             }
         }
 
-        this.barManager.GetRecorderVo().Finished();
+        this.barManager.Finished();
     }
 }

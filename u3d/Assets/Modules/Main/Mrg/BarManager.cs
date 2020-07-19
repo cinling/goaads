@@ -26,6 +26,10 @@ public class BarManager
     /// bar 列表（无序）
     /// </summary>
     public List<Bar> barList = new List<Bar>();
+    /// <summary>
+    /// 上次对比的下标
+    /// </summary>
+    public List<int> lastCompareIndexs = new List<int>();
 
 
     /// <summary>
@@ -93,6 +97,15 @@ public class BarManager
         //this.sortCoroutine = this.cvs.StartCoroutine(alg.BubbleSort());
         this.sortCoroutine = this.cvs.StartCoroutine(alg.SelectSort());
 
+    }
+
+    /// <summary>
+    /// 完成
+    /// </summary>
+    public void Finished()
+    {
+        this.GetRecorderVo().Finished();
+        this.InactiveAllBar();
     }
 
     /// <summary>
@@ -207,12 +220,25 @@ public class BarManager
     /// <returns>返回true，说明 firstIndex 比较大</returns>
     public bool CompareBars(int firstIndex, int secondIndex)
     {
+        for (int i = 0; i < this.lastCompareIndexs.Count; i++)
+        {
+            int index = this.lastCompareIndexs[i];
+            if (index == firstIndex || index == secondIndex)
+            {
+                continue;
+            }
+            this.barList[index].InactiveAnimation();
+        }
+        this.lastCompareIndexs.Clear();
+        this.lastCompareIndexs.Add(firstIndex);
+        this.lastCompareIndexs.Add(secondIndex);
+
         Bar bar1 = this.barList[firstIndex];
         Bar bar2 = this.barList[secondIndex];
 
         // 播放动画
-        bar1.CompareAnimation();
-        bar2.CompareAnimation();
+        bar1.ActiveAnimation();
+        bar2.ActiveAnimation();
 
         // 对比音效
         this.PlayCompareSound();
@@ -250,6 +276,35 @@ public class BarManager
 
             // 交换音效
             this.PlaySwapSound();
+        }
+    }
+
+    /// <summary>
+    /// 激活bar状态
+    /// </summary>
+    /// <param name="i"></param>
+    public void ActiveBar(int i)
+    {
+        this.barList[i].ActiveAnimation();
+    }
+
+    /// <summary>
+    /// 取消激活bar状态
+    /// </summary>
+    /// <param name="i"></param>
+    public void InactiveBar(int i)
+    {
+        this.barList[i].InactiveAnimation();
+    }
+
+    /// <summary>
+    /// 取消激活所有bar
+    /// </summary>
+    public void InactiveAllBar()
+    {
+        foreach(Bar bar in this.barList)
+        {
+            bar.InactiveAnimation();
         }
     }
 

@@ -16,12 +16,17 @@ public enum BarStatus
     None,
     /// <summary>
     /// 对比中
+    /// 200720 目前被 Active 代替。暂无使用
     /// </summary>
     Compare,
     /// <summary>
     /// 交换中
     /// </summary>
     Swap,
+    /// <summary>
+    /// 状态激活中（如选择排序法，需要一直点亮）
+    /// </summary>
+    Active,
 }
 
 /// <summary>
@@ -254,6 +259,38 @@ public class Bar : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 激活动画
+    /// </summary>
+    public void ActiveAnimation()
+    {
+        StartCoroutine(this.activeAnimation());
+        this.status = BarStatus.Active;
+    }
+
+    private IEnumerator activeAnimation()
+    {
+        yield return new WaitForFixedUpdate();
+        this.gameObject.GetComponent<Image>().color = Color.blue;
+    }
+
+    /// <summary>
+    /// 取消激活
+    /// </summary>
+    public void InactiveAnimation()
+    {
+        if (this.status == BarStatus.Active)
+        {
+            StartCoroutine(this.inactiveAnimation());
+            this.status = BarStatus.None;
+        }
+    }
+
+    private IEnumerator inactiveAnimation()
+    {
+        yield return new WaitForFixedUpdate();
+        this.gameObject.GetComponent<Image>().color = Color.black;
+    }
 
 
     /// <summary>
@@ -268,9 +305,11 @@ public class Bar : MonoBehaviour
             case BarStatus.None:
                 return true;
             case BarStatus.Compare:
-                return targetStatus == BarStatus.Swap;
+                return targetStatus == BarStatus.Swap || targetStatus == BarStatus.Active;
             case BarStatus.Swap:
                 return false;
+            case BarStatus.Active:
+                return true;
             default:
                 return false;
         }
