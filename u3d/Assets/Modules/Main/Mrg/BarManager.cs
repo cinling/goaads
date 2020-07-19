@@ -10,6 +10,10 @@ public class BarManager
     /// </summary>
     private BarVo barVo = new BarVo();
     /// <summary>
+    /// 记录器数据
+    /// </summary>
+    private RecorderVo recorderVo = new RecorderVo();
+    /// <summary>
     /// 运行锁
     /// 运行时，除了可以执行 Init() 进行解锁外，不能进行任何操作
     /// </summary>
@@ -19,6 +23,12 @@ public class BarManager
     /// </summary>
     private Coroutine sortCoroutine = null;
     /// <summary>
+    /// bar 列表（无序）
+    /// </summary>
+    public List<Bar> barList = new List<Bar>();
+
+
+    /// <summary>
     /// 运行锁
     /// </summary>
     public bool runLock {
@@ -26,10 +36,6 @@ public class BarManager
             return this._runLock;
         }
     }
-    /// <summary>
-    /// bar 列表（无序）
-    /// </summary>
-    public List<Bar> barList = new List<Bar>();
 
     /// <summary>
     /// Obsolete
@@ -59,6 +65,7 @@ public class BarManager
         }
     }
 
+
     public BarManager(Canvas cvs)
     {
         this.cvs = cvs;
@@ -79,9 +86,13 @@ public class BarManager
     {
         this.checkRunLock();
         this.runLockUp(); // 上锁
+        // 重置计数器
+        this.recorderVo.Reset();
 
         Algorithm alg = new Algorithm(this);
-        this.sortCoroutine = this.cvs.StartCoroutine(alg.BubbleSort());
+        //this.sortCoroutine = this.cvs.StartCoroutine(alg.BubbleSort());
+        this.sortCoroutine = this.cvs.StartCoroutine(alg.SelectSort());
+
     }
 
     /// <summary>
@@ -111,6 +122,11 @@ public class BarManager
     public BarVo GetBarVo()
     {
         return this.barVo;
+    }
+
+    public RecorderVo GetRecorderVo()
+    {
+        return this.recorderVo;
     }
 
     public void PrintBarList()
@@ -177,16 +193,37 @@ public class BarManager
                 continue;
             }
 
-            this.SwapBarList(targetIndex, randomIndex, false);
+            this.SwapBars(targetIndex, randomIndex, false);
         }
 
         this.ResetBarListView();
     }
 
     /// <summary>
+    /// 对比两个
+    /// </summary>
+    /// <param name="firstIndex"></param>
+    /// <param name="secondIndex"></param>
+    /// <returns>返回true，说明 firstIndex 比较大</returns>
+    public bool CompareBars(int firstIndex, int secondIndex)
+    {
+        Bar bar1 = this.barList[firstIndex];
+        Bar bar2 = this.barList[secondIndex];
+
+        // 播放动画
+        bar1.CompareAnimation();
+        bar2.CompareAnimation();
+
+        // 对比音效
+        this.PlayCompareSound();
+
+        return bar1.num > bar2.num;
+    }
+
+    /// <summary>
     /// 交换连个bar的位置
     /// </summary>
-    public void SwapBarList(int firstIndex, int secondIndex, bool updateView)
+    public void SwapBars(int firstIndex, int secondIndex, bool updateView)
     {
         Bar tmpBar = this.barList[firstIndex];
         this.barList[firstIndex] = this.barList[secondIndex];
@@ -238,7 +275,7 @@ public class BarManager
     /// </summary>
     public void PlayCompareSound()
     {
-        this.cvs.soundManager.PlayPiano(33);
+        this.cvs.soundManager.PlayPiano(44);
     }
 
     /// <summary>
@@ -246,7 +283,7 @@ public class BarManager
     /// </summary>
     public void PlaySwapSound()
     {
-        this.cvs.soundManager.PlayPiano(77);
+        this.cvs.soundManager.PlayPiano(45);
     }
 
     /// <summary>

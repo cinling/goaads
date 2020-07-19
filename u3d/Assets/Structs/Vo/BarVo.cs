@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,11 +33,9 @@ public class BarVo
     /// </summary>
     public float marginBottom = 15;
     /// <summary>
-    /// 每次运算的时间间隔。
-    /// 包括对比、位置互换.
-    /// 对比是一次操作。互换是三次（一次赋值就是一次计算）
+    /// 单词计算的耗时
     /// </summary>
-    public float intervalSeconds = 0.1f;
+    public float computerDuration = 0.1f;
     /// <summary>
     /// 交换动画时长
     /// </summary>
@@ -45,4 +44,30 @@ public class BarVo
     /// 对比动画时长
     /// </summary>
     public float compareAnimationSeconds = 0.3f;
+
+    /// <summary>
+    /// 对比耗时
+    /// </summary>
+    public float compareSeconds {
+        get {
+            return this.computerDuration * 1;
+        }
+    }
+    /// <summary>
+    /// 交换耗时
+    /// </summary>
+    public float swapSeconds {
+        get {
+            return this.computerDuration * 3;
+        }
+    }
+
+    /// <summary>
+    /// 赋值耗时
+    /// </summary>
+    public float assignSeconds {
+        get {
+            return this.computerDuration * 1;
+        }
+    }
 }
